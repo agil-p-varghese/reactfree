@@ -1,15 +1,21 @@
 import React,{ Component } from "react";
 import Product from "./Product";
 export default class ShoppingCart extends Component {
-        state={
-            products:[{id:1,productName:"iphone",price:8900,quantity:0},
-            {id:2,productName:"sonycamera",price:4500,quantity:0},
-            {id:3,productName:"samsung QLED TV",price:3100,quantity:0},
-            {id:4,productName:"ipad",price:2100,quantity:0},
-            {id:5,productName:"keltrin",price:9900,quantity:0},
-            {id:6,productName:"dumbrl",price:7100,quantity:0}],
+
+    constructor(props){
+
+       // console.log("constructor-shopping cart");
+        super(props);
+        this.state={
+            products:[
+                
+        ],
         };
+    }
+        
         render(){
+
+            console.log("reindr shopping cart");
             return(
                 <div className="container-fluid">
                     <h4>Shopping Cart</h4>
@@ -17,12 +23,102 @@ export default class ShoppingCart extends Component {
                         {this.state.products.map((prod)=>{
                          return<Product 
                         key={prod.id} 
-                         id={prod.id} 
-                         productName={prod.productName} 
-                         price={prod.price}/>;   
+                         product={prod}
+                         onIncreament={this.handleIncreament}
+                         onDecreament={this.handleDecreament}
+                         onDelete={this.handleDelete}
+                         >
+                            
+                            <button className="btn btn-primary">BUY NOW</button>
+                         </Product>;   
                         })}
                     </div>
                 </div>
             );
+        }
+        //rendre ends
+
+        /*componentDidMount=async()=>{
+
+            //console.log("comp DidMount")
+
+            var response = await fetch{"http://localhost:5000/products",{method:"GET"}};
+
+            var prods=await response.json();
+            
+            console.log(prods);
+            this.setState({products:prods});
+
+        }*/
+
+
+        componentDidMount = async () => {
+            //send request to server
+            var response = await fetch("http://localhost:5000/products", {
+              method: "GET",
+            });
+        
+            //the following code executes after receiving response from server
+            //converting the response body into a JS object array
+            var prods = await response.json();
+        
+            //the following code executes after converting response body into JS object array
+            console.log(prods);
+        
+            //updating products into component's state
+            this.setState({ products: prods });
+        
+            //console.log("componentDidMount - ShoppingCart");
+          };
+        componentDidUpdate(prevProps,prevState){
+            //console.log("shopping caert -componentDidUpdate",prevProps,prevState,this.props,this.state);
+        }
+        componentWillUnmount(){
+            //console.log("shopping caert-componentWillUnmount(")
+        }
+
+        componentDidCatch(error,info){
+            //console.log("componentDidCatch-shoppingcart");
+            console.log(error,info);
+
+            localStorage.lastError=`${error}\n${JSON.stringify(info)}}`;
+        }
+
+        
+
+        handleIncreament=(product,maxValue)=>{
+            //console.log("handleIncreament",product);
+            let allProducts=[...this.state.products];
+            let index = allProducts.indexOf(product);
+            console.log(allProducts[index]);
+            if(allProducts[index].quantity < maxValue){
+                allProducts[index].quantity++;
+
+            this.setState({products:allProducts});
+            }
+            
+        };
+        handleDecreament=(product,minValue)=>{
+            //console.log("handleDecreament",product);
+            let allProducts=[...this.state.products];
+            let index = allProducts.indexOf(product);
+            console.log(allProducts[index]);
+            if(allProducts[index].quantity > minValue){
+                allProducts[index].quantity--;
+
+            this.setState({products:allProducts});
+            }
+            
+        };
+
+        handleDelete=(product)=>{
+            let allProducts=[...this.state.products];
+            let index=allProducts.indexOf(product);
+
+            if(window.confirm("are u sure to dellete")){
+                allProducts.splice(index,1);
+            }
+            
+            this.setState({products:allProducts});
         }
 }

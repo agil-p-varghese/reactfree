@@ -7,6 +7,7 @@ import "popper.js/dist/umd/popper";
 //import NavBar from "./App";
 import App from "./App";
 import "./index.css";
+import"font-awesome/css/font-awesome.css";
 
 var element=<button class="btn btn-danger">hello world</button>; 
 ReactDOM.render(<App/>, document.getElementById("root"));
